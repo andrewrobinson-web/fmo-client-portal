@@ -4,6 +4,7 @@
 
 export const CLIENT = {
   name: "Dr. Sarah Mitchell",
+  firstName: "Sarah",
   company: "Mitchell Dental Group",
   package: "Diamond",
   am: {
@@ -25,9 +26,9 @@ export const PLATFORM_COLORS = {
 };
 
 export const PLATFORM_ICONS = {
-  Facebook: "f",
-  Instagram: "◷",
-  TikTok: "♪",
+  Facebook: "FB",
+  Instagram: "IG",
+  TikTok: "TK",
   LinkedIn: "in",
   YouTube: "▶",
 };

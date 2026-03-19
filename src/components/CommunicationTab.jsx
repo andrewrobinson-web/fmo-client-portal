@@ -11,7 +11,7 @@ export default function CommunicationTab() {
       />
 
       {/* Response Times */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '28px' }} className="stagger">
+      <div className="grid-3 stagger" style={{ gap: '16px', marginBottom: '28px' }}>
         {[
           { tier: 'Gold', time: '24 hours', color: T.gold },
           { tier: 'Emerald', time: '12 hours', color: T.emerald },

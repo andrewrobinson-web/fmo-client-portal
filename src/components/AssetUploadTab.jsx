@@ -1,19 +1,53 @@
 import { useState, useRef } from 'react';
+
+const ACCEPTED_TYPES = new Set([
+  'image/jpeg', 'image/png', 'image/svg+xml', 'image/gif', 'image/webp',
+  'video/mp4', 'video/quicktime', 'video/webm',
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/zip', 'application/x-zip-compressed',
+]);
+const MAX_SIZE_MB = 500;
 import { Card, SectionHeader, Badge, T } from './ui';
 
 export default function AssetUploadTab() {
   const [dragOver, setDragOver] = useState(false);
   const [files, setFiles] = useState([]);
+  const [rejections, setRejections] = useState([]);
   const [notes, setNotes] = useState('');
+  const [notesFocused, setNotesFocused] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const fileInput = useRef(null);
 
   const handleFiles = (fileList) => {
-    const newFiles = Array.from(fileList).map(f => ({
-      name: f.name,
-      size: (f.size / 1024 / 1024).toFixed(2) + ' MB',
-      type: f.type.split('/')[1]?.toUpperCase() || 'FILE',
-    }));
-    setFiles(prev => [...prev, ...newFiles]);
+    const accepted = [];
+    const rejected = [];
+
+    Array.from(fileList).forEach(f => {
+      const sizeMB = f.size / 1024 / 1024;
+      if (!ACCEPTED_TYPES.has(f.type)) {
+        rejected.push(`${f.name} — unsupported file type`);
+      } else if (sizeMB > MAX_SIZE_MB) {
+        rejected.push(`${f.name} — exceeds ${MAX_SIZE_MB}MB limit`);
+      } else {
+        accepted.push({
+          name: f.name,
+          size: sizeMB.toFixed(2) + ' MB',
+          type: f.type.split('/')[1]?.toUpperCase() || 'FILE',
+        });
+      }
+    });
+
+    setFiles(prev => [...prev, ...accepted]);
+    setRejections(rejected);
+    setSubmitted(false);
+  };
+
+  const handleSubmit = () => {
+    // TODO: replace with real API call (e.g. POST to /api/assets)
+    setFiles([]);
+    setNotes('');
+    setSubmitted(true);
   };
 
   return (
@@ -45,6 +79,7 @@ export default function AssetUploadTab() {
           ref={fileInput}
           type="file"
           multiple
+          accept="image/jpeg,image/png,image/svg+xml,image/gif,image/webp,video/mp4,video/quicktime,video/webm,application/pdf,.docx,application/zip"
           style={{ display: 'none' }}
           onChange={e => handleFiles(e.target.files)}
         />
@@ -57,6 +92,21 @@ export default function AssetUploadTab() {
           Accepts images, videos, documents, and ZIP files up to 500MB
         </div>
       </div>
+
+      {/* Rejected Files */}
+      {rejections.length > 0 && (
+        <div style={{
+          marginBottom: '16px', padding: '14px 20px', borderRadius: '12px',
+          background: `${T.danger}10`, border: `1px solid ${T.danger}40`,
+        }}>
+          <div style={{ fontSize: '13px', fontWeight: 700, color: T.danger, marginBottom: '6px' }}>
+            {rejections.length} file{rejections.length > 1 ? 's' : ''} could not be added:
+          </div>
+          {rejections.map((msg, i) => (
+            <div key={i} style={{ fontSize: '13px', color: T.danger, opacity: 0.8 }}>{msg}</div>
+          ))}
+        </div>
+      )}
 
       {/* Queued Files */}
       {files.length > 0 && (
@@ -105,7 +155,7 @@ export default function AssetUploadTab() {
             minHeight: '100px',
             padding: '14px',
             borderRadius: '10px',
-            border: `1px solid ${T.border}`,
+            border: `1px solid ${notesFocused ? T.teal : T.border}`,
             background: 'rgba(0,0,0,0.2)',
             color: T.text,
             fontSize: '14px',
@@ -115,14 +165,29 @@ export default function AssetUploadTab() {
             boxSizing: 'border-box',
             transition: 'border-color 0.2s ease',
           }}
-          onFocus={e => (e.target.style.borderColor = T.teal)}
-          onBlur={e => (e.target.style.borderColor = T.border)}
+          onFocus={() => setNotesFocused(true)}
+          onBlur={() => setNotesFocused(false)}
         />
       </Card>
 
       {/* Submit */}
+      {submitted && (
+        <div style={{
+          marginBottom: '16px',
+          padding: '14px 20px',
+          borderRadius: '12px',
+          background: `${T.success}15`,
+          border: `1px solid ${T.success}40`,
+          color: T.success,
+          fontSize: '14px',
+          fontWeight: 600,
+        }}>
+          Files submitted successfully. Your AM has been notified.
+        </div>
+      )}
       <button
         disabled={files.length === 0}
+        onClick={handleSubmit}
         style={{
           padding: '16px 40px',
           borderRadius: '12px',
@@ -144,7 +209,7 @@ export default function AssetUploadTab() {
       {/* File Requirements */}
       <Card>
         <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '12px' }}>📋 File Requirements</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+        <div className="grid-2" style={{ gap: '10px' }}>
           {[
             { type: 'Photos', req: 'JPG/PNG, min 1080×1080, max 50MB' },
             { type: 'Videos', req: 'MP4/MOV, max 500MB, 1080p preferred' },

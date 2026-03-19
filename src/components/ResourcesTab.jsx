@@ -4,7 +4,8 @@ import { Card, Badge, SectionHeader, T } from './ui';
 
 export default function ResourcesTab() {
   const [activeCategory, setActiveCategory] = useState('All');
-  const [openFAQ, setOpenFAQ] = useState(null);
+  const [openFAQ, setOpenFAQ] = useState(null); // stores faq.q string, not index
+  const [searchFocused, setSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const categories = ['All', 'Content', 'Reporting', 'Assets', 'Account', 'Support'];
 
@@ -36,7 +37,7 @@ export default function ResourcesTab() {
             width: '100%',
             padding: '14px 20px 14px 48px',
             borderRadius: '12px',
-            border: `1px solid ${T.border}`,
+            border: `1px solid ${searchFocused ? T.teal : T.border}`,
             background: T.card,
             color: T.text,
             fontSize: '14px',
@@ -45,8 +46,8 @@ export default function ResourcesTab() {
             boxSizing: 'border-box',
             transition: 'border-color 0.2s ease',
           }}
-          onFocus={e => (e.target.style.borderColor = T.teal)}
-          onBlur={e => (e.target.style.borderColor = T.border)}
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
         />
         <span style={{
           position: 'absolute', left: '18px', top: '50%',
@@ -82,18 +83,25 @@ export default function ResourcesTab() {
 
       {/* FAQ Accordion */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '36px' }}>
-        {filtered.map((faq, i) => (
-          <div
-            key={i}
+        {filtered.map((faq) => (
+          <button
+            key={faq.q}
+            aria-expanded={openFAQ === faq.q}
+            onClick={() => setOpenFAQ(openFAQ === faq.q ? null : faq.q)}
             style={{
+              display: 'block',
+              width: '100%',
+              textAlign: 'left',
+              fontFamily: 'inherit',
+              color: 'inherit',
+              padding: 0,
               background: T.card,
               borderRadius: '16px',
-              border: `1px solid ${openFAQ === i ? `${T.teal}40` : T.border}`,
+              border: `1px solid ${openFAQ === faq.q ? `${T.teal}40` : T.border}`,
               cursor: 'pointer',
               transition: 'border-color 0.2s ease',
               overflow: 'hidden',
             }}
-            onClick={() => setOpenFAQ(openFAQ === i ? null : i)}
           >
             <div style={{
               padding: '18px 24px',
@@ -109,12 +117,12 @@ export default function ResourcesTab() {
                 fontSize: '18px',
                 color: T.textMuted,
                 transition: 'transform 0.2s ease',
-                transform: openFAQ === i ? 'rotate(180deg)' : 'rotate(0deg)',
+                transform: openFAQ === faq.q ? 'rotate(180deg)' : 'rotate(0deg)',
               }}>
                 ▾
               </span>
             </div>
-            {openFAQ === i && (
+            {openFAQ === faq.q && (
               <div style={{
                 padding: '0 24px 18px 24px',
                 fontSize: '14px',
@@ -126,7 +134,7 @@ export default function ResourcesTab() {
                 {faq.a}
               </div>
             )}
-          </div>
+          </button>
         ))}
         {filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px', color: T.textMuted, fontSize: '14px' }}>

@@ -66,7 +66,7 @@ export default function ReportingTab() {
       </div>
 
       {/* KPI Overview */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '14px', marginBottom: '24px' }} className="stagger">
+      <div className="grid-4 stagger" style={{ gap: '14px', marginBottom: '24px' }}>
         <StatCard label="Followers" value={data.followers} growth={data.followerGrowth} />
         <StatCard label="Total Reach" value={data.reach} />
         <StatCard label="Engagement Rate" value={data.engagement} suffix="%" />
@@ -74,7 +74,7 @@ export default function ReportingTab() {
       </div>
 
       {/* Charts */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+      <div className="grid-2" style={{ gap: '20px', marginBottom: '24px' }}>
         <Card>
           <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '20px' }}>Reach Over Time</div>
           <ResponsiveContainer width="100%" height={220}>
@@ -141,7 +141,7 @@ export default function ReportingTab() {
       {/* KPI Glossary */}
       <Card>
         <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '16px' }}>📖 KPI Glossary</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+        <div className="grid-2" style={{ gap: '12px' }}>
           {[
             { term: 'Reach', def: 'Unique accounts that saw your content' },
             { term: 'Impressions', def: 'Total times content was displayed (includes repeats)' },

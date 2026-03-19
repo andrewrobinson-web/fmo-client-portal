@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { CLIENT } from './data/clientData';
 import { T } from './components/ui';
+import ErrorBoundary from './components/ErrorBoundary';
 import WelcomeTab from './components/WelcomeTab';
 import DeliverablesTab from './components/DeliverablesTab';
 import ReportingTab from './components/ReportingTab';
@@ -19,21 +20,16 @@ const TABS = [
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('welcome');
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => setLoaded(true), 100);
-  }, []);
 
   const renderTab = () => {
     switch (activeTab) {
-      case 'welcome':       return <WelcomeTab />;
+      case 'welcome':       return <WelcomeTab onNavigate={setActiveTab} />;
       case 'deliverables':  return <DeliverablesTab />;
       case 'reporting':     return <ReportingTab />;
       case 'communication': return <CommunicationTab />;
       case 'resources':     return <ResourcesTab />;
       case 'upload':        return <AssetUploadTab />;
-      default:              return <WelcomeTab />;
+      default:              return <WelcomeTab onNavigate={setActiveTab} />;
     }
   };
 
@@ -43,8 +39,6 @@ export default function App() {
         background: `linear-gradient(180deg, ${T.navy} 0%, ${T.dark} 100%)`,
         minHeight: '100vh',
         color: T.text,
-        opacity: loaded ? 1 : 0,
-        transition: 'opacity 0.5s ease',
       }}
     >
       {/* ─── HEADER ───────────────────────────────────────────────────────── */}
@@ -100,8 +94,10 @@ export default function App() {
       </header>
 
       {/* ─── NAVIGATION ───────────────────────────────────────────────────── */}
-      <div style={{ padding: '16px 40px 0', display: 'flex', justifyContent: 'center' }}>
+      <div className="nav-wrapper" style={{ padding: '16px 40px 0', display: 'flex', justifyContent: 'center' }}>
         <nav
+          role="tablist"
+          aria-label="Portal sections"
           style={{
             display: 'flex',
             gap: '4px',
@@ -114,6 +110,8 @@ export default function App() {
           {TABS.map(tab => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
               style={{
                 padding: '10px 20px',
@@ -137,7 +135,9 @@ export default function App() {
 
       {/* ─── CONTENT ──────────────────────────────────────────────────────── */}
       <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '40px' }}>
-        {renderTab()}
+        <ErrorBoundary key={activeTab}>
+          {renderTab()}
+        </ErrorBoundary>
       </main>
 
       {/* ─── FOOTER ───────────────────────────────────────────────────────── */}

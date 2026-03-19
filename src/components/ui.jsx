@@ -15,7 +15,7 @@ export const T = {
   gold: '#F59E0B',
   emerald: '#10B981',
   diamond: '#6366F1',
-  success: '#10B981',
+  success: '#10B981', // intentionally same hex as emerald — different semantic role
   warning: '#F59E0B',
   danger: '#EF4444',
 };
@@ -65,24 +65,7 @@ export function AnimatedNumber({ value, suffix = '' }) {
 export function PackageBadge({ tier }) {
   const color = TIER_COLORS[tier] || T.teal;
   const icon = tier === 'Diamond' ? '◆' : tier === 'Emerald' ? '●' : '★';
-
-  return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '4px 10px',
-        borderRadius: '100px',
-        fontSize: '12px',
-        fontWeight: 700,
-        background: `${color}18`,
-        color: color,
-      }}
-    >
-      {icon} {tier}
-    </span>
-  );
+  return <Badge color={color}>{icon} {tier}</Badge>;
 }
 
 // ─── BADGE ───────────────────────────────────────────────────────────────────

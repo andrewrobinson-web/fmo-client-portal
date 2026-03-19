@@ -98,7 +98,7 @@ export default function DeliverablesTab() {
       <div style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: T.teal, marginBottom: '12px', marginTop: '32px' }}>
         Service Level Agreement
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+      <div className="grid-3" style={{ gap: '16px' }}>
         {[
           { label: 'Response Time', value: SLA[selectedTier].response, icon: '⚡' },
           { label: 'Revision Turnaround', value: SLA[selectedTier].revision, icon: '🔄' },
